@@ -1,0 +1,26 @@
+{% for group in chatrooms %}
+  {% if group.is_private %}
+    {% for member in group.members.all %}
+      {% if member != request.user %}
+        <div class="chat-item active" onclick="openChat()">
+          <img src="{{ member.profile.avatar.url }}" class="avatar">
+          <div class="chat-meta">
+            <strong>{{ member.username }}</strong><br>
+            <small>Typing...</small>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <div class="chat-item" onclick="openChat()">
+      <img src="/media/default_image/5856.jpg" class="avatar">
+      <div class="chat-meta">
+        <strong>{{ group.name }}</strong><br>
+        <small>{{ group.about }}</small>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+
+
+password = zbsw yknt tsid nxrc

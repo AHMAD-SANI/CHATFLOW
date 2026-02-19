@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Group • ChatFlow</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0b1220; --card:#111827; --panel:#1f2937; --input:#0f172a;
+  --text:#e5e7eb; --muted:#9ca3af; --primary:#6366f1;
+}
+*{box-sizing:border-box;font-family:Inter;margin:0;padding:0}
+body{background:linear-gradient(135deg,#0b1220,#020617);color:var(--text);min-height:100vh}
+.container{max-width:720px;margin:auto;padding:20px}
+.card{background:var(--card);border-radius:22px;box-shadow:0 40px 80px rgba(0,0,0,.45);overflow:hidden}
+
+/* Header */
+.header{text-align:center;padding:30px 20px}
+.avatar-wrap{position:relative;width:110px;height:110px;margin:auto}
+.group-avatar{
+  width:110px;height:110px;border-radius:50%;
+  background:var(--primary);display:grid;place-items:center;
+  font-size:40px;font-weight:700;cursor:pointer;
+}
+.edit-avatar{
+  position:absolute;bottom:0;right:0;
+  width:30px;height:30px;border-radius:50%;
+  background:#0008;display:grid;place-items:center;
+  cursor:pointer;font-size:14px;
+}
+/* input[type=file]{display:none} */
+
+/* Sections */
+.section{background:var(--panel);border-radius:18px;padding:20px;margin:16px}
+.section h3{color:#c7d2fe;font-size:15px;margin-bottom:14px}
+
+.field{display:flex;flex-direction:column;margin-bottom:14px}
+.field label{font-size:12px;color:var(--muted);margin-bottom:6px}
+.field input,.field textarea{
+  background:var(--input);border:none;border-radius:12px;
+  padding:12px;color:var(--text)
+}
+textarea{resize:none;height:70px}
+
+/* Members preview */
+.members-preview{
+  display:flex;flex-wrap:wrap;gap:10px;margin-top:10px
+}
+.member{
+  width:60px;text-align:center;font-size:11px;color:var(--muted)
+}
+.member .avatar{
+  width:50px;height:50px;border-radius:50%;
+  background:var(--primary);display:grid;place-items:center;
+  font-weight:600;color:white;margin:auto
+}
+
+/* Buttons */
+button{
+  width:100%;padding:14px;border:none;
+  border-radius:14px;background:var(--primary);
+  color:white;font-weight:600;cursor:pointer;margin-top:10px
+}
+.secondary{background:#334155}
+
+/* Modal */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;align-items:center;justify-content:center;
+  z-index:999;
+}
+.modal.show{display:flex}
+.modal-box{
+  width:90%;max-width:420px;
+  background:var(--card);border-radius:18px;
+  padding:20px;animation:zoom .3s ease;
+}
+@keyframes zoom{from{scale:.5;opacity:0}to{scale:1;opacity:1}}
+
+.search{background:var(--input);border:none;border-radius:12px;padding:10px;color:white;width:100%}
+.user-list{margin-top:14px;max-height:220px;overflow-y:auto}
+.user{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px;border-radius:12px;margin-bottom:6px;
+  background:var(--panel)
+}
+.user .info{display:flex;align-items:center;gap:10px}
+.user .avatar{width:36px;height:36px;border-radius:50%;background:var(--primary);display:grid;place-items:center}
+.user button{width:auto;padding:6px 10px;font-size:12px}
+
+@media(max-width:640px){
+  .members-preview{justify-content:center}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<div class="header">
+  <h2>Create New Group</h2>
+  <div class="avatar-wrap">
+    <div class="group-avatar" id="groupAvatar">G</div>
+  </div>
+</div>
+
+<div class="section">
+<h3>Group Information</h3>
+
+
+<form  method="POST" enctype="multipart/form-data">{% csrf_token %}
+
+
+  <div class="field">
+    <label>Group Image</label>
+    <input id="groupName" type="file"  placeholder="Enter group name" name="image">
+  </div>
+
+  <div class="field">
+    <label>Group Name</label>
+    <input id="groupName" placeholder="Enter group name" name="group_name">
+  </div>
+
+  <div class="field">
+    <label>Group Bio</label>
+    <input placeholder="Short group bio (optional)" name="group_bio">
+  </div>
+
+  <div class="field">
+    <label>Description</label>
+    <textarea placeholder="Describe the purpose of this group" name="description"></textarea>
+  </div>
+
+
+
+
+  <!-- 
+  <div class="field">
+    <label>Members</label>
+    <button class="secondary" onclick="openMembers()">➕ Add Members</button>
+    <div class="members-preview" id="membersPreview"></div>
+  </div> -->
+
+  <button type="submit">Create Group</button>
+  </div>
+
+
+  </div>
+  </div>
+</form>
+
+<!-- MEMBERS MODAL -->
+<!-- <div class="modal" id="membersModal">
+  <div class="modal-box">
+    <h3>Add Members</h3>
+    <input class="search" placeholder="Search users..." onkeyup="filterUsers(this.value)">
+    <div class="user-list" id="userList"></div>
+    <button class="secondary" onclick="closeMembers()">Done</button>
+  </div>
+</div> -->
+
+<script>
+const users=[
+  {id:1,name:"Ahmad"},
+  {id:2,name:"Sani"},
+  {id:3,name:"Mary"},
+  {id:4,name:"John"},
+  {id:5,name:"Lily"}
+];
+const selected=[];
+
+function previewAvatar(e){
+  const r=new FileReader();
+  r.onload=()=>{groupAvatar.style.backgroundImage=`url(${r.result})`;groupAvatar.textContent=''}
+  r.readAsDataURL(e.target.files[0])
+}
+
+function openMembers(){
+  membersModal.classList.add('show');
+  renderUsers(users)
+}
+function closeMembers(){membersModal.classList.remove('show')}
+
+function renderUsers(list){
+  userList.innerHTML=''
+  list.forEach(u=>{
+    const added=selected.includes(u.id)
+    userList.innerHTML+=`
+      <div class="user">
+        <div class="info">
+          <div class="avatar">${u.name[0]}</div>
+          <small>${u.name}</small>
+        </div>
+        <button onclick="toggleUser(${u.id})">${added?'Remove':'Add'}</button>
+      </div>`
+  })
+}
+
+function toggleUser(id){
+  const i=selected.indexOf(id)
+  if(i>-1) selected.splice(i,1)
+  else selected.push(id)
+  renderUsers(users)
+  renderPreview()
+}
+
+function renderPreview(){
+  membersPreview.innerHTML=''
+  selected.forEach(id=>{
+    const u=users.find(x=>x.id===id)
+    membersPreview.innerHTML+=`
+      <div class="member">
+        <div class="avatar">${u.name[0]}</div>
+        ${u.name}
+      </div>`
+  })
+}
+
+function filterUsers(q){
+  renderUsers(users.filter(u=>u.name.toLowerCase().includes(q.toLowerCase())))
+}
+
+function createGroup(){
+  alert(`Group "${groupName.value}" created with ${selected.length} members`)
+}
+</script>
+
+</body>
+</html>

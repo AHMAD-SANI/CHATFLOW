@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Modern Chat UI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:#0f172a;
+  --panel:#111827;
+  --card:#1f2933;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --primary:#6366f1;
+  --danger:#ef4444;
+  --radius:14px;
+}
+
+*{box-sizing:border-box;font-family:Inter}
+
+body{
+  margin:0;
+  height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  overflow:auto;
+}
+
+.app{display:flex;height:100%}
+
+/* Sidebar */
+.sidebar{
+  width:280px;
+  background:var(--panel);
+  display:flex;
+  flex-direction:column;
+  transition:.3s;
+}
+
+.sidebar-header{
+  padding:16px;
+  font-weight:600;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.profile{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:16px;
+  cursor:pointer;
+}
+
+.profile .avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:var(--primary);
+  object-fit:cover;
+}
+
+.profile strong{font-size:16px;}
+
+.chat-list{flex:1;overflow-y:auto}
+
+.chat-item{
+  display:flex;
+  gap:12px;
+  padding:14px;
+  cursor:pointer;
+}
+
+.chat-item:hover{background:rgba(255,255,255,.05)}
+
+.chat-item.active{
+  background:rgba(99,102,241,.15);
+  border-left:3px solid var(--primary);
+}
+
+.avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:var(--primary);
+  object-fit:cover;
+}
+
+.chat-meta small{color:var(--muted)}
+
+/* Chat Area */
+.chat{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+.chat-header{
+  background:var(--panel);
+  padding:14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.back-btn{
+  display:none;
+  cursor:pointer;
+  font-size:20px;
+}
+
+.typing{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* Messages */
+.messages{
+  flex:1;
+  padding:20px;
+  overflow-y:auto;
+}
+
+.msg-row{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.msg{
+  max-width:65%;
+  padding:12px;
+  border-radius:var(--radius);
+  position:relative;
+}
+
+.msg.left{background:var(--card)}
+.msg.right{
+  background:var(--primary);
+  margin-left:auto;
+}
+
+/* Small sender avatar */
+.msg-avatar{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  background:#94a3b8;
+  object-fit:cover;
+}
+
+/* Delete button */
+.delete{
+  position:absolute;
+  bottom:4px;
+  right:6px;
+  font-size:12px;
+  opacity:0;
+  cursor:pointer;
+}
+
+.msg:hover .delete{opacity:1}
+
+/* Input */
+.input-area{
+  background:var(--panel);
+  padding:12px;
+  display:flex;
+  gap:10px;
+}
+
+input{
+  flex:1;
+  padding:14px 16px;
+  border:none;
+  border-radius:12px;
+  background:var(--card);
+  color:var(--text);
+  font-size:15px;
+  min-height:48px;
+}
+
+/* Ensure input doesn't overflow and form uses full width */
+.input-area form{display:flex;width:100%;gap:8px}
+input{min-width:0}
+
+button{
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  padding:12px 16px;
+  border-radius:var(--radius);
+  cursor:pointer;
+}
+
+/* Modal */
+.modal{
+  position:fixed;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  padding:16px;
+}
+
+.modal-content{
+  background:var(--panel);
+  padding:24px;
+  border-radius:var(--radius);
+  width:100%;
+  max-width:360px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  text-align:center;
+}
+
+.modal-content .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.modal-content .btn-secondary{background:transparent;border:1px solid rgba(255,255,255,.08);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
+.modal-content .btn-primary{background:var(--primary);color:#fff;padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+
+.modal-content .modal-avatar{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:var(--primary);
+  object-fit:cover;
+  margin:0 auto 12px auto;
+}
+
+.modal-content strong{
+  font-size:20px;
+}
+
+.modal-content span{
+  font-size:14px;
+  color:var(--muted);
+}
+
+a{
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Mobile / Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar{
+    position:fixed;
+    top:0;left:0;bottom:0;
+    width:100%;
+    max-width:100%;
+    z-index:40;
+    transform:translateX(-100%);
+    background:var(--panel);
+  }
+  .sidebar.show{transform:translateX(0)}
+  .back-btn{display:block}
+
+  .chat{position:relative}
+  .chat-header{padding:10px;gap:8px}
+  .messages{padding:12px}
+
+  .msg{max-width:85%}
+
+  .input-area{padding:10px;gap:8px;position:sticky;bottom:0}
+  input{min-height:48px;padding:12px 14px;font-size:16px;border-radius:10px}
+  button{padding:12px 14px;border-radius:10px}
+
+  /* Make modals behave like bottom sheets on mobile */
+  .modal{align-items:flex-end;padding:0}
+  .modal-content{max-width:100%;width:100%;border-radius:12px 12px 0 0;margin:0}
+  .modal-content .modal-avatar{width:76px;height:76px}
+
+  /* Ensure touch targets are large enough */
+  .chat-item{padding:16px}
+  .sidebar-header{padding:12px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- Sidebar -->
+<aside class="sidebar show" id="sidebar">
+  <a href="/profile">
+  <div class="profile" >
+    <img src="{{profile.image.url}}" alt="Profile" class="avatar">
+    <strong>{{profile.user.username}}</strong>
+  </div>
+  </a>
+
+  <div class="sidebar-header">
+    Chats
+    <button class="add-chat-btn" onclick="toggleAddForm()">+</button>
+  </div>
+
+  <div class="chat-list">
+
+
+    {% for group in chatrooms %}
+      {% if group.is_private  %}
+        {% for member in group.members.all %}
+          {% if member.user != request.user %}
+            {% if group.id == current_group.id %}
+              <div class="chat-item active" data-group-id="{{group.id}}" data-chat-url="{% url 'chatroom' group.id %}" onclick="openChat(this)">
+            {% else %}
+              <div class="chat-item" data-group-id="{{group.id}}" data-chat-url="{% url 'chatroom' group.id %}" onclick="openChat(this)">
+            {% endif %}
+              <img src="{{member.image.url}}" alt="Ahmad Dev" class="avatar">
+              <div class="chat-meta">
+                <strong>{{member.user.username}}</strong><br>
+                <small>{{member.user.email}}</small>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+          {% if group.id == current_group.id %}
+              <div class="chat-item active" data-group-id="{{group.id}}" data-chat-url="{% url 'chatroom' group.id %}" onclick="openChat(this)">
+            {% else %}
+              <div class="chat-item" data-group-id="{{group.id}}" data-chat-url="{% url 'chatroom' group.id %}" onclick="openChat(this)">
+            {% endif %}
+            <img src="{{group.image.url}}" alt="Aliyu Gama" class="avatar">
+            <div class="chat-meta">
+              <strong>{{group.name}}</strong><br>
+              <small>{{group.admin.user.username}}</small>
+            </div>
+          </div>
+      {% endif %}
+    {% endfor %}
+
+  </div>
+</aside>
+
+<!-- Chat -->
+<section class="chat">
+  <div class="chat-header">
+    <span class="back-btn" onclick="backToList()">☰</span>
+    {% if current_group.is_private %}
+      {% for member in current_group.members.all %}
+        {% if member != profile %}
+            <div class="profile" onclick="openProfileModal()" style="cursor:pointer">
+                <img src="{{member.image.url}}" alt="Profile" class="avatar">
+            </div>
+            <div>
+              <strong>{{member.user.username}}</strong><br>
+              <span class="typing">{{member.user.email}}</span>
+            </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+              <div class="profile" onclick="openProfileModal()" style="cursor:pointer">
+                <img src="{{current_group.image.url}}" alt="Profile" class="avatar">
+            </div>
+            <div>
+              <strong>{{current_group.name}}</strong><br>
+              <span class="typing">{{current_group.about}}</span>
+            </div>
+    {% endif %}
+  </div>
+
+  <div class="messages" id="messages">
+
+    
+{% for message in chat_message.reverse %}
+    {% if message.user != profile%}
+      <!-- Incoming -->
+      <div class="msg-row" id="message_id">
+        <img src="{{message.user.image.url}}" alt="A" class="msg-avatar">
+        <div class="msg left">
+          {{message.message}}
+          <span class="delete" onclick="deleteMsg(this)">🗑️</span>
+        </div>
+      </div>
+    {% else %}
+    <!-- Outgoing -->
+      <div class="msg-row" id="message_id">
+        <div class="msg right">
+          {{message.message}}
+          <span class="delete" onclick="deleteMsg(this)">🗑️</span>
+        </div>
+      </div>
+    {% endif %}
+{% endfor %}
+
+  </div>
+
+  <div class="input-area">
+    <form method="post" id="message_form">{% csrf_token %}
+    <input id="input" name="message_body" placeholder="Type a message...">
+    <button type="submit" >Send</button>
+    </form>
+  </div>
+</section>
+
+<!-- Profile Modal -->
+<div class="modal" id="profileModal" aria-hidden="true">
+  {% if current_group.is_private %}
+    {% for member in current_group.members.all %}
+      {% if member != profile %}
+        <div class="modal-content">
+          <img src="{{member.image.url}}" alt="{{member.user.username}}" class="modal-avatar">
+          <strong>{{member.user.username}}</strong>
+          <span>{{member.user.email}}</span>
+          <span>{{member.bio}}</span>
+          <div class="actions">
+            <button type="button" class="btn-secondary" onclick="closeProfileModal()">Close</button>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <div class="modal-content">
+      <img src="{{current_group.image.url}}" alt="{{current_group.name}}" class="modal-avatar">
+      <strong>{{current_group.name}}</strong>
+      <span>{{ current_group.admin.user.email }}</span>
+      <span>{{current_group.about}}</span>
+      <div class="actions">
+        <a href="{% url 'group_detail' current_group.id %}" class="btn-primary" style="text-decoration:none;display:inline-block;padding:10px 14px;border-radius:10px">Open Group</a>
+        <button type="button" class="btn-secondary" onclick="closeProfileModal()">Close</button>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- New Chat Modal -->
+<!-- New Chat Modal -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="newChatTitle">
+    <h3 id="newChatTitle">New Chat</h3>
+    <form action="{% url 'privatechat' %}" method="post" class="new-chat-form">
+      {% csrf_token %}
+      <input type="email" id="newChatName" name="email" placeholder="Enter email..." required>
+      <div class="actions">
+        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Add</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const sidebar=document.getElementById("sidebar")
+const messages=document.getElementById("messages")
+const input=document.getElementById("input")
+const modal=document.getElementById("modal")
+const profileModal=document.getElementById("profileModal")
+
+function openChat(el){
+  if(!el) return
+  // accept event objects too
+  if(el instanceof Event) el = el.currentTarget || el.target
+  var item = (el.closest && el.closest('.chat-item')) ? (el.closest('.chat-item')) : el
+  if(!item) return
+  var url = item.getAttribute('data-chat-url')
+  var id = item.getAttribute('data-group-id')
+  // persist selected group so mobile can hide the list after navigation
+  if(id) try{ sessionStorage.setItem('openGroupId', id) }catch(e){}
+  if(window.innerWidth<768) sidebar.classList.remove("show")
+  // prefer constructing the URL from the id to avoid cases where data-chat-url renders as '/chat'
+  if(id){ window.location.href = '/chat/' + id; return }
+  if(url && url !== '/chat' && url !== '/chat/') { window.location.href = url; return }
+}
+
+function viewGroup(){
+  window.location.href = '{% url "group_detail" current_group.id %}';
+}
+
+// delegate clicks inside the chat list only (less invasive than document-level)
+const chatList = document.querySelector('.chat-list')
+if(chatList){
+  chatList.addEventListener('click', function(e){
+    const item = e.target.closest('.chat-item')
+    if(!item) return
+    // ignore clicks on form controls or links inside items (defensive)
+    const ctrl = e.target.closest('a, button, input, textarea, label')
+    if(ctrl && !ctrl.classList.contains('chat-item')) return
+    e.preventDefault()
+    // prefer loading messages via AJAX to avoid full reload
+    const id = item.getAttribute('data-group-id')
+    setActive(item)
+    updateHeaderFromItem(item)
+    if(id){
+      history.pushState({group:id}, '', '/chat/' + id)
+      fetchAndReplaceMessages(id)
+    } else {
+      // fallback: follow link/url if no id
+      const url = item.getAttribute('data-chat-url')
+      if(url) window.location.href = url
+    }
+  })
+}
+
+// On page load, if we navigated from mobile and selected a group, hide the sidebar
+const CURRENT_GROUP_ID = '{{ current_group.id|default:"" }}'
+document.addEventListener('DOMContentLoaded', function(){
+  try{
+    var openId = sessionStorage.getItem('openGroupId')
+    if(openId && window.innerWidth < 768){
+      if(String(openId) === String(CURRENT_GROUP_ID)){
+        sidebar.classList.remove('show')
+      }
+    }
+  }catch(e){/* ignore */}
+  // clear stored id after attempting to apply it
+  sessionStorage.removeItem('openGroupId')
+})
+
+// update active class helper
+function setActive(item){
+  if(!item) return
+  document.querySelectorAll('.chat-item.active').forEach(function(i){ i.classList.remove('active') })
+  item.classList.add('active')
+}
+
+function updateHeaderFromItem(item){
+  try{
+    const headerName = document.querySelector('.chat-header > div strong')
+    const headerTyping = document.querySelector('.chat-header > div .typing')
+    const avatarImg = document.querySelector('.chat-header .profile .avatar')
+    const nameEl = item.querySelector('.chat-meta strong')
+    const subEl = item.querySelector('.chat-meta small')
+    const img = item.querySelector('.avatar')
+    if(headerName && nameEl) headerName.textContent = nameEl.textContent
+    if(headerTyping && subEl) headerTyping.textContent = subEl.textContent
+    if(avatarImg && img) avatarImg.src = img.src
+  }catch(e){/* ignore */}
+}
+
+// fetch the full chat page and extract the .messages innerHTML to replace current messages
+function fetchAndReplaceMessages(id){
+  const url = '/chat/' + id
+  fetch(url, {headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(function(res){
+      if(!res.ok) throw new Error('Network response was not ok')
+      return res.text()
+    })
+    .then(function(html){
+      // parse returned HTML and extract .messages
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(html, 'text/html')
+      const newMessages = doc.querySelector('.messages')
+      const newHeader = doc.querySelector('.chat-header')
+      if(newMessages){
+        messages.innerHTML = newMessages.innerHTML
+        messages.scrollTop = messages.scrollHeight
+      }
+      // optionally update header typing/about/avatar if returned
+      if(newHeader){
+        const currHeader = document.querySelector('.chat-header')
+        if(currHeader) currHeader.innerHTML = newHeader.innerHTML
+      }
+    })
+    .catch(function(err){
+      // fallback to full navigation if AJAX fails
+      console.error('AJAX load failed, falling back:', err)
+      window.location.href = url
+    })
+}
+
+// handle back/forward navigation
+window.addEventListener('popstate', function(e){
+  const state = e.state
+  if(state && state.group){
+    const id = state.group
+    // find matching chat item and mark active
+    const item = document.querySelector('.chat-item[data-group-id="' + id + '"]')
+    if(item) setActive(item)
+    fetchAndReplaceMessages(id)
+  }
+})
+
+function backToList(){
+  sidebar.classList.add("show")
+}
+
+// intercept the message form to POST via fetch and update messages without reload
+const messageForm = document.querySelector('.input-area form')
+if(messageForm){
+  messageForm.addEventListener('submit', function(e){
+    e.preventDefault()
+    const form = e.target
+    const fd = new FormData(form)
+    const action = window.location.pathname || form.action || ''
+    // send the form as POST; include credentials for CSRF cookie
+    fetch(action, {method:'POST', body:fd, credentials:'same-origin'})
+      .then(function(res){
+        if(!res.ok) throw new Error('Network response was not ok')
+        return res.text()
+      })
+      .then(function(){
+        // after sending, reload the messages fragment for the current chat
+        const path = window.location.pathname
+        // extract id from path (/chat/<id>)
+        const parts = path.split('/')
+        const id = parts[2] || ''
+        if(id) fetchAndReplaceMessages(id)
+        // reset input
+        const inp = form.querySelector('#input')
+        if(inp) inp.value = ''
+      })
+      .catch(function(err){
+        console.error('Message send failed; falling back to normal submit', err)
+        form.submit()
+      })
+  })
+}
+
+function deleteMsg(el){
+  el.closest(".msg-row").remove()
+}
+
+// Modal for new chat
+function toggleAddForm(){
+  if(!modal) return
+  const form = modal.querySelector('form')
+  if(form) form.reset()
+  if(window.innerWidth < 768) sidebar.classList.remove('show')
+  modal.style.display = 'flex'
+  modal.setAttribute('aria-hidden','false')
+  const emailInput = document.getElementById('newChatName')
+  if(emailInput) emailInput.focus()
+}
+
+function closeModal(){
+  if(!modal) return
+  modal.style.display = 'none'
+  modal.setAttribute('aria-hidden','true')
+}
+
+// Profile Modal
+function openProfileModal(){ profileModal.style.display="flex" }
+function closeProfileModal(){ profileModal.style.display="none" }
+
+
+
+
+// WEBSOCKET CONNECTION CODE
+
+// Determine the protocol
+const websoket_protocol = window.location.protocol === "https:" ? "wss" : "ws";
+const websoket_url = `${websoket_protocol}://${window.location.host}/ws/chats/{{room_id}}/`
+
+// Initailize the new websocket connection
+const socket = new WebSocket(websoket_url);
+
+socket.onopen = (event) => {
+  console.log('hello AHMAD SANI MD your websocket connected successfully...');
+};
+
+socket.onerror = (event) => {
+  console.error('WebSocket error:', event);
+};
+
+socket.onclose = (event) => {
+  console.log('hello AHMAD SANI MD your websocket disconnected...');
+};
+
+// Submit a message using websocket
+const message_form = document.getElementById('message_form')
+message_form.addEventListener('submit', function(event){
+  event.preventDefault();
+  const message = document.getElementById('input').value;
+  if(message.trim() === '') return;
+  socket.send(JSON.stringify(
+    {'message' : message,
+    'sender' : '{{user}}',
+    'profile_photo' : '{{profile.image}}',
+    }
+  ));
+  document.getElementById('input').value = '';
+});
+
+// For responce from the connections
+socket.addEventListener('message', (event)=>{
+  try {
+    const data = JSON.parse(event.data);
+    console.log('Message received:', data);
+    
+    const sender = data['sender'];
+    const message = data['message'];
+    const profile_image = data['profile_image'];
+    const currentUser = '{{profile.user.username}}';
+    
+    // Append the message to the chatbox
+    if(sender != '{{user}}'){
+      messages.innerHTML += `
+        <div class="msg-row">
+          <img src="${profile_image}" alt="A" class="msg-avatar">
+          <div class="msg left">
+            ${message}
+            <span class="delete" onclick="deleteMsg(this)">🗑</span>
+          </div>
+        </div>`;
+    } else {
+      messages.innerHTML += `
+        <div class="msg-row">
+          <div class="msg right">
+            ${message}
+            <span class="delete" onclick="deleteMsg(this)">🗑</span>
+          </div>
+        </div>`;
+    }
+    
+    // Scroll to bottom
+    messages.scrollTop = messages.scrollHeight;
+  } catch(e) {
+    console.error('Error parsing message:', e);
+  }
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Login • ChatFlow</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0f172a;
+  --card:#111827;
+  --input:#1f2937;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --primary:#6366f1;
+  --danger:#ef4444;
+  --success:#22c55e;
+  --radius:14px;
+}
+
+*{box-sizing:border-box;font-family:Inter}
+body{
+  margin:0;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#0f172a,#020617);
+  color:var(--text);
+}
+
+/* ---------- Card ---------- */
+.card{
+  width:100%;
+  max-width:420px;
+  background:var(--card);
+  padding:32px;
+  border-radius:22px;
+  box-shadow:0 30px 80px rgba(0,0,0,.45);
+  animation:fadeUp .8s ease;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:none}
+}
+
+/* ---------- Branding ---------- */
+.brand{
+  text-align:center;
+  margin-bottom:22px;
+}
+.brand h1{
+  margin:0;
+  font-size:28px;
+}
+.brand span{color:var(--primary)}
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:24px;
+}
+
+/* ---------- Message ---------- */
+.message{
+  display:none;
+  padding:12px;
+  border-radius:12px;
+  margin-bottom:16px;
+  font-size:14px;
+}
+.errormessage{
+  display: block;
+  padding:12px;
+  border-radius:12px;
+  margin-bottom:16px;
+  font-size:14px;
+}
+.message.success{
+  background:rgba(34,197,94,.15);
+  color:var(--success);
+}
+.message.error{
+  background:rgba(239,68,68,.15);
+  color:var(--danger);
+}
+.errormessage.error{
+  background:rgba(239,68,68,.15);
+  color:var(--danger);
+}
+
+/* ---------- Inputs ---------- */
+.group{
+  margin-bottom:16px;
+}
+label{
+  display:block;
+  font-size:14px;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+
+.input-wrap{
+  position:relative;
+}
+
+input{
+  width:100%;
+  padding:14px 44px 14px 14px;
+  border-radius:var(--radius);
+  border:none;
+  background:var(--input);
+  color:var(--text);
+  outline:none;
+}
+
+input:focus{
+  outline:2px solid var(--primary);
+}
+
+/* Show / Hide */
+.toggle{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:13px;
+  color:var(--muted);
+  cursor:pointer;
+  user-select:none;
+}
+
+/* ---------- Button ---------- */
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:var(--radius);
+  background:var(--primary);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  margin-top:6px;
+}
+
+button:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+}
+
+/* Spinner */
+.spinner{
+  width:18px;
+  height:18px;
+  border:3px solid rgba(255,255,255,.3);
+  border-top-color:white;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+/* ---------- Footer ---------- */
+.footer{
+  text-align:center;
+  margin-top:18px;
+  font-size:14px;
+  color:var(--muted);
+}
+.footer a{
+  color:var(--primary);
+  text-decoration:none;
+}
+
+/* ---------- Mobile ---------- */
+@media(max-width:480px){
+  .card{
+    margin:16px;
+    padding:24px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="brand">
+    <h1><span>Chat</span>Flow</h1>
+  </div>
+  <p class="subtitle">Welcome back, sign in</p>
+
+  <div id="msg" class="message"></div>
+  {% for message in messages %}
+  <div id="msg" class="errormessage error">{{message}}</div>
+  {% endfor %}
+
+  <form id="loginForm" method="post">{% csrf_token %}
+    <div class="group">
+      <label>Username</label>
+      <input id="email" type="text" placeholder="Enter username" name="username">
+    </div>
+
+    <div class="group">
+      <label>Password</label>
+      <div class="input-wrap">
+        <input id="password" type="password" placeholder="Enter password" name="password">
+        <span class="toggle" onclick="togglePassword()">Show</span>
+      </div>
+    </div>
+
+    <button id="loginBtn" type="submit">
+      <span>Login</span>
+    </button>
+
+  </form>
+
+  <div class="footer">
+    Don’t have an account? <a href="/register">Create one</a> <br>
+    Forgot password?   <a href="/forgot_password">Reset.</a>
+  </div>
+
+</div>
+
+<script>
+const form = document.getElementById("loginForm")
+const btn = document.getElementById("loginBtn")
+const msg = document.getElementById("msg")
+
+function togglePassword(){
+  const input = document.getElementById("password")
+  input.type = input.type === "password" ? "text" : "password"
+}
+
+
+
+  // simulate API call
+
+</script>
+
+</body>
+</html>

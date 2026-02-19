@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Modern Chat UI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:#0f172a;
+  --panel:#111827;
+  --card:#1f2933;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --primary:#6366f1;
+  --danger:#ef4444;
+  --radius:14px;
+}
+
+*{box-sizing:border-box;font-family:Inter}
+
+body{
+  margin:0;
+  height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  overflow:hidden;
+}
+
+.app{display:flex;height:100%}
+
+/* Sidebar */
+.sidebar{
+  width:280px;
+  background:var(--panel);
+  display:flex;
+  flex-direction:column;
+  transition:.3s;
+}
+
+.sidebar-header{
+  padding:16px;
+  font-weight:600;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.profile{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:16px;
+  cursor:pointer;
+}
+
+.profile .avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:var(--primary);
+  object-fit:cover;
+}
+
+.profile strong{font-size:16px;}
+
+.chat-list{flex:1;overflow-y:auto}
+
+.chat-item{
+  display:flex;
+  gap:12px;
+  padding:14px;
+  cursor:pointer;
+}
+
+.chat-item:hover{background:rgba(255,255,255,.05)}
+
+.chat-item.active{
+  background:rgba(99,102,241,.15);
+  border-left:3px solid var(--primary);
+}
+
+.avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:var(--primary);
+  object-fit:cover;
+}
+
+.chat-meta small{color:var(--muted)}
+
+/* Chat Area */
+.chat{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+.chat-header{
+  background:var(--panel);
+  padding:14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.back-btn{
+  display:none;
+  cursor:pointer;
+  font-size:20px;
+}
+
+.typing{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* Messages */
+.messages{
+  flex:1;
+  padding:20px;
+  overflow-y:auto;
+}
+
+.msg-row{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.msg{
+  max-width:65%;
+  padding:12px;
+  border-radius:var(--radius);
+  position:relative;
+}
+
+.msg.left{background:var(--card)}
+.msg.right{
+  background:var(--primary);
+  margin-left:auto;
+}
+
+/* Small sender avatar */
+.msg-avatar{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  background:#94a3b8;
+  object-fit:cover;
+}
+
+/* Delete button */
+.delete{
+  position:absolute;
+  bottom:4px;
+  right:6px;
+  font-size:12px;
+  opacity:0;
+  cursor:pointer;
+}
+
+.msg:hover .delete{opacity:1}
+
+/* Input */
+.input-area{
+  background:var(--panel);
+  padding:12px;
+  display:flex;
+  gap:10px;
+}
+
+input{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:var(--radius);
+  background:var(--card);
+  color:var(--text);
+}
+
+button{
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  padding:12px 16px;
+  border-radius:var(--radius);
+  cursor:pointer;
+}
+
+/* Modal */
+.modal{
+  position:fixed;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:20;
+  padding:16px;
+}
+
+.modal-content{
+  background:var(--panel);
+  padding:24px;
+  border-radius:var(--radius);
+  width:100%;
+  max-width:360px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  text-align:center;
+}
+
+.modal-content .modal-avatar{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:var(--primary);
+  object-fit:cover;
+  margin:0 auto 12px auto;
+}
+
+.modal-content strong{
+  font-size:20px;
+}
+
+.modal-content span{
+  font-size:14px;
+  color:var(--muted);
+}
+
+.modal-content .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.modal-content .btn-secondary{background:transparent;border:1px solid rgba(255,255,255,.08);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer;font-size:14px}
+.modal-content .btn-primary{background:var(--primary);color:#fff;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-size:14px}
+
+a{
+  text-decoration: none;
+  color: inherit;
+}
+
+    .prompt-container {
+      text-align: center;
+      margin-top: 100px;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .cartoon {
+      width: 300px;
+      height: auto;
+      margin: 0 auto;
+      animation: bounce 3s ease-in-out infinite;
+    }
+
+    .cartoon img {
+      width: 100%;
+      height: 300px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    /* Room error / toast */
+    .room-error{
+      position:absolute;
+      top:18px;
+      right:18px;
+      background:linear-gradient(180deg, rgba(239,68,68,0.12), rgba(239,68,68,0.06));
+      border:1px solid rgba(239,68,68,0.18);
+      color:var(--danger);
+      padding:12px 14px;
+      border-radius:10px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.4);
+      min-width:260px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:space-between;
+      opacity:0;
+      transform:translateY(-8px) scale(.98);
+      pointer-events:none;
+      transition:transform .28s ease, opacity .28s ease;
+      z-index:30;
+    }
+    .room-error.visible{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+    .room-error .error-text{flex:1;text-align:left;font-size:14px}
+    .room-error .error-close{background:transparent;border:none;color:var(--danger);font-size:16px;cursor:pointer}
+
+    @keyframes shake {
+      0%{transform:translateX(0)}
+      25%{transform:translateX(-6px)}
+      50%{transform:translateX(6px)}
+      75%{transform:translateX(-4px)}
+      100%{transform:translateX(0)}
+    }
+    .room-error.shake{animation:shake .45s ease-in-out}
+
+    /* Responsive: make toast fixed and full-width friendly on mobile */
+    @media (max-width: 768px) {
+      .room-error{
+        position:fixed !important;
+        left:12px !important;
+        right:12px !important;
+        top:12px !important;
+        min-width:unset;
+        width:auto;
+        max-width:calc(100% - 24px);
+        padding:12px 12px;
+        border-radius:10px;
+        font-size:14px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.45);
+        z-index:9999;
+      }
+      .room-error .error-text{font-size:14px}
+      .room-error .error-close{font-size:18px;padding-left:8px}
+    }
+
+
+/* Mobile */
+@media (max-width: 768px) {
+  .sidebar{
+    position:fixed;
+    top:0;left:0;bottom:0;
+    width:100%;
+    max-width:100%;
+    z-index:40;
+    transform:translateX(-100%);
+    background:var(--panel);
+  }
+  .sidebar.show{transform:translateX(0)}
+  .back-btn{display:block}
+
+  .chat{position:relative}
+  .chat-header{padding:10px;gap:8px}
+  .messages{padding:12px}
+
+  .msg{max-width:85%}
+
+  .input-area{padding:10px;gap:8px;position:sticky;bottom:0}
+  input{min-height:48px;padding:12px 14px;font-size:16px;border-radius:10px}
+  button{padding:12px 14px;border-radius:10px}
+
+  /* Modal/bottom sheet behavior */
+  .modal{align-items:flex-end;padding:0;z-index:50 !important}
+  .modal-content{max-width:100%;width:100%;border-radius:12px 12px 0 0;margin:0;max-height:90vh;overflow-y:auto}
+  .modal-content h3{margin:0 0 12px 0;font-size:18px}
+  .modal-content input{max-width:100%;width:100%}
+  .modal-content .actions{flex-wrap:wrap;justify-content:center;gap:8px}
+  .modal-content .btn-secondary,.modal-content .btn-primary{flex:1;min-width:100px}
+
+  /* Ensure room error is fixed and visible on mobile */
+  .room-error{position:fixed;left:12px;right:12px;top:12px;max-width:calc(100% - 24px);z-index:9999}
+
+  .chat-item{padding:16px}
+  .sidebar-header{padding:12px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- Sidebar -->
+<aside class="sidebar show" id="sidebar">
+  <a href="/profile">
+  <div class="profile" >
+    <img src="{{profile.image.url}}" alt="Profile" class="avatar">
+    <strong>{{profile.user.username}}</strong>
+  </div>
+  </a>
+
+  <div class="sidebar-header">
+    Chats
+    <button class="add-chat-btn" onclick="toggleAddForm()">+</button>
+  </div>
+
+  <div class="chat-list">
+    {% for group in chatrooms %}
+      {% if group.is_private  %}
+        {% for member in group.members.all %}
+          {% if member.user != request.user %}
+            <div class="chat-item" data-group-id="{{group.id}}" data-chat-url="{% url 'chatroom' group.id %}" onclick="openChat(this)">
+              <img src="{{member.image.url}}" alt="Ahmad Dev" class="avatar">
+              <div class="chat-meta">
+                <strong>{{member.user.username}}</strong><br>
+                <small>{{member.user.email}}</small>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+          <div class="chat-item" data-group-id="{{group.id}}" data-chat-url="{% url 'chatroom' group.id %}" onclick="openChat(this)">
+            <img src="{{group.image.url}}" alt="Aliyu Gama" class="avatar">
+            <div class="chat-meta">
+              <strong>{{group.name}}</strong><br>
+              <small>{{group.admin.user.username}}</small>
+            </div>
+          </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</aside>
+
+<!-- Chat -->
+<section class="chat">
+  <div class="chat-header">
+    <span class="back-btn" onclick="backToList()">☰</span>
+  </div>
+
+  <!-- Room error (hidden by default) -->
+{% if messages %}
+  {% for message in messages %}
+  <div class="room-error visible" aria-hidden="false">
+    <div class="error-text">{{ message }}</div>
+    <button class="error-close" aria-label="Close error" onclick="this.parentElement.remove()">✕</button>
+  </div>
+  {% endfor %}
+{% endif %}
+
+  <div class="messages" id="messages">
+
+    <div class="prompt-container">
+        <div class="cartoon" title="Friendly cartoon animal">
+        <img src="/media/23624.jpg"   alt="Cute animal cartoon" />
+        </div>
+        <div class="message">Select a chat to see messages 🐾</div>
+  </div>
+
+</section>
+
+<!-- Profile Modal -->
+<div class="modal" id="profileModal">
+  <div class="modal-content">
+    <img src="/media/default_image/5856.jpg" alt="Ahmad" class="modal-avatar">
+    <strong>Ahmad</strong>
+    <span>ahmad@example.com</span>
+    <button onclick="closeProfileModal()">Close</button>
+  </div>
+</div>
+
+<!-- New Chat Modal -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="newChatTitle">
+    <h3 id="newChatTitle">New Chat</h3>
+    <form action="{% url 'privatechat' %}" method="post" class="new-chat-form">
+      {% csrf_token %}
+      <input type="email" id="newChatName" name="email" placeholder="Enter email..." required>
+      <div class="actions">
+        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Add</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const sidebar=document.getElementById("sidebar")
+const messages=document.getElementById("messages")
+const input=document.getElementById("input")
+const modal=document.getElementById("modal")
+const profileModal=document.getElementById("profileModal")
+
+function openChat(el){
+  if(!el) return
+  if(el instanceof Event) el = el.currentTarget || el.target
+  var item = (el.closest && el.closest('.chat-item')) ? el.closest('.chat-item') : el
+  if(!item) return
+  var id = item.getAttribute('data-group-id')
+  var url = item.getAttribute('data-chat-url')
+  if(id){ window.location.href = '/chat/' + id; return }
+  if(url && url !== '/chat' && url !== '/chat/') { window.location.href = url; return }
+}
+
+function backToList(){
+  sidebar.classList.add("show")
+};
+
+function send(){
+  if(!input.value.trim()) return
+  const row=document.createElement("div")
+  row.className="msg-row"
+  row.innerHTML=`<div class="msg right">${input.value}<span class="delete" onclick="deleteMsg(this)">🗑️</span></div>`
+  messages.appendChild(row)
+  input.value=""
+  messages.scrollTop=messages.scrollHeight
+}
+
+function deleteMsg(el){
+  el.closest(".msg-row").remove()
+}
+
+// Modal for new chat
+function toggleAddForm(){
+  if(!modal) return
+  const form = modal.querySelector('form')
+  if(form) form.reset()
+  modal.style.display = 'flex'
+  modal.setAttribute('aria-hidden','false')
+  const emailInput = document.getElementById('newChatName')
+  if(emailInput) emailInput.focus()
+}
+
+function closeModal(){
+  if(!modal) return
+  modal.style.display = 'none'
+  modal.setAttribute('aria-hidden','true')
+}
+
+// Room error functions
+function showRoomError(message, timeout=5000){
+  const el = document.getElementById('roomError')
+  const txt = document.getElementById('roomErrorText')
+  if(!el || !txt) return
+  txt.textContent = message || 'An error occurred while sending to chat rooms.'
+  el.classList.remove('shake')
+  // trigger reflow to restart animation when needed
+  void el.offsetWidth
+  el.classList.add('visible','shake')
+  el.setAttribute('aria-hidden','false')
+  if(window.__roomErrorTimeout) clearTimeout(window.__roomErrorTimeout)
+  window.__roomErrorTimeout = setTimeout(()=>{ hideRoomError() }, timeout)
+}
+
+function hideRoomError(){
+  const el = document.getElementById('roomError')
+  if(!el) return
+  el.classList.remove('visible','shake')
+  el.setAttribute('aria-hidden','true')
+}
+
+// Profile Modal
+function openProfileModal(){ profileModal.style.display="flex" }
+function closeProfileModal(){ profileModal.style.display="none" }
+</script>
+</body>
+</html>

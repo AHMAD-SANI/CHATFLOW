@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to ChatFlow</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f172a;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    table {
+        border-spacing: 0;
+    }
+
+    .wrapper {
+        width: 100%;
+        background-color: #0f172a;
+        padding: 20px 0;
+    }
+
+    .main {
+        background-color: #1e293b;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 600px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        padding: 20px 25px;
+        color: #ffffff;
+    }
+
+    .logo {
+        max-height: 40px;
+    }
+
+    .content {
+        padding: 30px;
+        color: #e2e8f0;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .profile-img {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #2563eb;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 14px 28px;
+        margin-top: 20px;
+        background-color: #2563eb;
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+    }
+
+    .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 12px;
+        color: #94a3b8;
+        background-color: #111827;
+    }
+
+    .footer a {
+        color: #2563eb;
+        text-decoration: none;
+    }
+
+    /* Mobile */
+    @media screen and (max-width: 600px) {
+        .content {
+            padding: 20px !important;
+        }
+
+        .button {
+            display: block;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<center class="wrapper">
+    <table class="main" width="100%">
+
+        <!-- Header with Logo -->
+        <tr>
+            <td class="header">
+                <table width="100%">
+                    <tr>
+                        <td align="left">
+                            <!-- Platform Logo -->
+                            <img src="{{ MEDIA_URL }}/default_image/logo.png" alt="ChatFlow Logo" class="logo">
+                        </td>
+                        <td align="right" style="font-size:14px;">
+                            ChatFlow
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <!-- Content -->
+        <tr>
+            <td class="content">
+                
+                <!-- Greeting Row with Profile Photo -->
+                <table width="100%">
+                    <tr>
+                        <td align="left">
+                            <h2 style="margin:0; color:#ffffff;">
+                                Hello {{profile.user.username}},
+                            </h2>
+                        </td>
+                        <td align="right">
+                            <!-- User Profile Photo -->
+                            <img src="{{profile.image.url}}" 
+                                 alt="User Profile" 
+                                 class="profile-img">
+                        </td>
+                    </tr>
+                </table>
+
+                <p style="margin-top:20px;">
+                    Welcome to <strong>ChatFlow</strong> — we're excited to have you on board.
+                    You now have access to a smooth, secure, and powerful communication experience.
+                </p>
+
+                <p>
+                    Start exploring your dashboard and discover how effortlessly your
+                    conversations can flow.
+                </p>
+
+                <a href="#" class="button">
+                    Get Started
+                </a>
+
+                <p style="margin-top:30px;">
+                    If you need help, our support team is always here for you.
+                </p>
+
+                <p>
+                    Best regards,<br>
+                    <strong>The ChatFlow Team</strong>
+                </p>
+            </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+            <td class="footer">
+                © 2026 ChatFlow. All rights reserved.<br><br>
+                <a href="#">Unsubscribe</a> | 
+                <a href="#">Privacy Policy</a>
+            </td>
+        </tr>
+
+    </table>
+</center>
+
+</body>
+</html>

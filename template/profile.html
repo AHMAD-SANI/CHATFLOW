@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Profile • ChatFlow</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0b1220;
+  --card:#111827;
+  --panel:#1f2937;
+  --input:#0f172a;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --primary:#6366f1;
+  --success:#22c55e;
+  --danger:#ef4444;
+  --radius:16px;
+}
+
+*{box-sizing:border-box;font-family:Inter}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0b1220,#020617);
+  color:var(--text);
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.45);
+}
+
+/* Header */
+.header{
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  padding:40px 20px;
+  text-align:center;
+}
+
+.avatar-container{
+  position:relative;
+  width:110px;
+  height:110px;
+  margin:auto;
+}
+
+/* ✅ UPDATED AVATAR */
+.avatar-img{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#0f172a;
+  cursor:pointer;
+}
+
+.online{
+  width:14px;
+  height:14px;
+  background:var(--success);
+  border-radius:50%;
+  position:absolute;
+  bottom:8px;
+  right:8px;
+  border:3px solid #0f172a;
+}
+
+.header h2{margin:14px 0 4px}
+.header p{margin:0;color:#e0e7ff}
+
+/* Body */
+.body{
+  padding:24px;
+  display:grid;
+  gap:24px;
+}
+
+.section{
+  background:var(--panel);
+  padding:20px;
+  border-radius:var(--radius);
+}
+
+.section h3{
+  margin:0 0 14px;
+  font-size:15px;
+  color:#c7d2fe;
+}
+
+/* Info Grid */
+.info-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.field label{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.field span,
+.field input,
+.field textarea{
+  display:block;
+  margin-top:6px;
+  font-size:14px;
+}
+
+.field input,
+.field textarea{
+  display:none;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:var(--input);
+  color:var(--text);
+}
+
+textarea{resize:none;height:80px}
+
+/* Groups */
+.group-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px;
+  background:var(--input);
+  border-radius:14px;
+  margin-top:12px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+/* Scrollable groups list: limit to ~3 items and allow scrolling when overflow */
+.groups-list{
+  max-height:260px; /* roughly 3 items */
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px; /* match spacing between .group-item elements */
+  padding-right:6px; /* make room for scrollbar */
+}
+
+/* Optional: thin, subtle scrollbar */
+.groups-list::-webkit-scrollbar{width:8px}
+.groups-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:8px}
+.groups-list::-webkit-scrollbar-track{background:transparent}
+
+.group-item:hover{
+  background:#111c3a;
+}
+
+.group-avatar{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:var(--primary);
+  object-fit:cover;
+  flex-shrink:0;
+}
+
+.group-info{
+  display:flex;
+  flex-direction:column;
+}
+
+.group-info strong{
+  font-size:14px;
+}
+
+.group-info small{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:2px;
+}
+
+/* Buttons */
+.actions{
+  display:flex;
+  gap:12px;
+  margin-top:16px;
+}
+
+.actions button{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.edit{background:var(--primary);color:white}
+.save{background:var(--success);color:white;display:none}
+.chat{background:#0f172a;color:white}
+.logout{background:rgba(239,68,68,.15);color:#fecaca}
+.create-group{
+  padding:14px;
+  width:100%;
+  border:none;
+  border-radius:14px;
+  background:var(--primary);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* Danger Zone */
+.danger-zone{
+  border:1px solid rgba(239,68,68,.35);
+  background:linear-gradient(135deg,#1f0d12,#16080c);
+}
+
+.danger-zone p{
+  font-size:13px;
+  color:#fecaca;
+  margin-bottom:14px;
+}
+
+.delete-btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* Avatar Zoom Modal */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(6px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+.modal.show{display:flex}
+
+.big-avatar{
+  width:90vw;
+  max-width:420px;
+  aspect-ratio:1/1;
+  background:#0f172a;
+  border-radius:14px;
+  background-size:cover;
+  background-position:center;
+}
+
+/* Delete Confirmation Modal */
+.confirm-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1100;
+}
+
+.confirm-modal.show{display:flex}
+
+.confirm-box{
+  background:var(--card);
+  border-radius:18px;
+  padding:24px;
+  max-width:360px;
+  width:90%;
+}
+
+.confirm-actions{
+  display:flex;
+  gap:12px;
+}
+
+.confirm-actions button{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  font-weight:600;
+}
+
+.cancel-btn{background:#0f172a;color:white}
+.confirm-delete{background:#ef4444;color:white}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+@media(max-width:640px){
+  .info-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="avatar-container">
+        <img
+          src="{{ profile.image.url }}"
+          alt="Profile Image"
+          id="avatarDisplay"
+          class="avatar-img"
+          onclick="openAvatar()"
+        >
+        <span class="online"></span>
+      </div>
+      <h2>{{profile.user.username}}</h2>
+      <p>Online</p>
+    </div>
+
+    <div class="body">
+
+      <!-- Profile Information -->
+      <div class="section">
+        <h3>Profile Information</h3>
+        <form method="post" enctype="multipart/form-data" action="/profile">{% csrf_token %}
+          <div class="info-grid">
+
+            <div class="field">
+              <label>Profile Image</label>
+              <span id="imgText">{{profile.image}}</span>
+              <input type="file" id="imgInput" name="profile_image" onchange="previewAvatar(event)">
+            </div>
+
+            <div class="field">
+              <label>Fullname</label>
+              <span id="uText">{{profile.fullname}}</span>
+              <input id="uInput" name="username" value="{{profile.user.username}}">
+            </div>
+
+            <div class="field">
+              <label>Email</label>
+              <span id="eText">{{profile.user.email}}</span>
+              <input id="eInput" name="email" value="{{profile.user.email}}">
+            </div>
+
+            <div class="field">
+              <label>Phone</label>
+              <span id="pText">{{profile.phone}}</span>
+              <input id="pInput" name="phone" value="{{profile.phone}}">
+            </div>
+
+            <div class="field">
+              <label>Address</label>
+              <span id="aText">{{profile.address}}, Nigeria</span>
+              <input id="aInput" name="address" value="{{profile.address}}">
+            </div>
+
+            <div class="field">
+              <label>Bio</label>
+              <span id="bText">{{profile.bio}}</span>
+              <textarea id="bInput" name="bio">{{profile.bio}}</textarea>
+            </div>
+
+          </div>
+
+          <div class="actions">
+            <button type="button" class="edit" onclick="edit()">Edit</button>
+            <button type="submit" class="save" onclick="save()">Save</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Groups -->
+      <div class="section">
+        <h3>Your Groups</h3>
+
+        <div class="groups-list">
+          {% for group in user_groups %}
+          <a href="/groups/{{group.id}}">
+          <div class="group-item" >
+            <img src="{{ group.image.url }}" alt="Developers Hub" class="group-avatar">
+            <div class="group-info">
+              <strong>{{group.name}}</strong>
+              <small>{{group.about}}</small>
+            </div>
+          </div>
+          </a>
+          {% empty %}
+              <center><h3>YOU HAVE NO ANY GROUP OWN BY YOU.</h3></center>
+          {% endfor %}
+        </div>
+      </div>
+
+
+
+      <!-- Create Group -->
+      <div class="section">
+        <button class="create-group" onclick="window.location.href='/create_group'" >➕ Create New Group</button>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="chat" onclick="window.location.href='/'">Chats</button>
+        <button class="logout" onclick="window.location.href='/logout'">Logout</button>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="section danger-zone">
+        <h3 style="color:#fecaca">Danger Zone</h3>
+        <p>Deleting your account is permanent and cannot be undone.</p>
+        <button class="delete-btn" onclick="openDeleteDialog()">❌ Delete My Account</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Avatar Zoom Modal -->
+<div class="modal" id="modal" onclick="closeAvatar()">
+  <div class="big-avatar" id="bigAvatar"></div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="confirm-modal" id="deleteModal">
+  <div class="confirm-box">
+    <h4 style="color:#fecaca">Delete Account?</h4>
+    <p>This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="cancel-btn" onclick="closeDeleteDialog()">Cancel</button>
+      <button class="confirm-delete" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function edit(){ toggle(true) }
+function save(){ toggle(false) }
+
+
+function toggle(on){
+  ["u","e","p","b","a","img"].forEach(i=>{
+    let t=document.getElementById(i+"Text")
+    let inp=document.getElementById(i+"Input")
+    if(t) t.style.display=on?"none":"block"
+    if(inp) inp.style.display=on?"block":"none"
+  })
+  document.querySelector(".edit").style.display=on?"none":"block"
+  document.querySelector(".save").style.display=on?"block":"none"
+}
+
+function openAvatar(){
+  modal.classList.add("show")
+  bigAvatar.style.backgroundImage = `url(${avatarDisplay.src})`
+}
+
+function closeAvatar(){ modal.classList.remove("show") }
+
+function previewAvatar(e){
+  let r=new FileReader()
+  r.onload=()=>{ avatarDisplay.src = r.result }
+  r.readAsDataURL(e.target.files[0])
+}
+
+function openDeleteDialog(){ deleteModal.classList.add("show") }
+function closeDeleteDialog(){ deleteModal.classList.remove("show") }
+function confirmDelete(){ window.location.href='/delete_my_account'; closeDeleteDialog() }
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Details (Admin) • ChatFlow</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0b1220; --card:#111827; --panel:#1f2937; --input:#0f172a;
+  --text:#e5e7eb; --muted:#9ca3af; --primary:#6366f1;
+  --danger:#dc3737; --success:#22c55e;
+}
+*{box-sizing:border-box;font-family:Inter;margin:0;padding:0;}
+body{background:linear-gradient(135deg,#0b1220,#020617);color:var(--text);min-height:100vh;}
+.container{max-width:720px;margin:auto;padding:20px;}
+.card{background:var(--card);border-radius:22px;box-shadow:0 40px 80px rgba(0,0,0,.45);overflow:hidden}
+
+/* Header */
+.header{text-align:center;padding:30px 20px}
+
+
+.editable{
+  background:transparent;border:none;color:var(--text);
+  text-align:center;font-size:22px;font-weight:700;
+}
+.editable.bio{font-size:13px;color:#c7d2fe;margin-top:6px}
+
+/* Sections */
+.section{
+  background:var(--panel);
+  border-radius:18px;
+  padding:20px;margin:16px;
+}
+.section h3{font-size:15px;color:#c7d2fe;margin-bottom:12px}
+
+/* Info */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.info-grid strong{font-size:13px;color:#e0e7ff}
+.info-grid small{font-size:12px;color:var(--muted)}
+
+/* Members */
+.members-list{
+  display:flex;flex-wrap:wrap;gap:12px;
+  max-height:200px;overflow-y:auto;
+}
+.member{
+  width:60px;text-align:center;position:relative;
+  display:flex;flex-direction:column;align-items:center;
+}
+.member .avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--primary);
+  object-fit:cover;
+}
+.member small{
+  margin-top:6px;font-size:11px;color:var(--muted);
+  max-width:60px;overflow:hidden;text-overflow:ellipsis;word-break:break-word;line-height:1.2;max-height:2.4em;
+}
+.remove{
+  position:absolute;top:-4px;right:2px;
+  background:var(--danger);color:white;
+  width:18px;height:18px;border-radius:50%;
+  font-size:12px;cursor:pointer;
+}
+
+/* Admin actions */
+.admin-actions button{
+  width:100%;padding:14px;
+  border:none;border-radius:14px;
+  background:var(--primary);
+  color:white;font-weight:600;
+  margin-top:10px;cursor:pointer;
+}
+.admin-actions .danger{background:var(--danger)}
+.admin-actions .success{background:var(--success)}
+
+/* Link + QR */
+.link-input{
+  width:100%;background:var(--input);
+  border:none;border-radius:12px;
+  padding:10px;color:white;
+}
+.qr{display:flex;justify-content:center;margin-top:10px;cursor:pointer}
+.qr img{width:180px;height:180px;border-radius:14px}
+
+/* Modal */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center;
+  z-index:999;
+}
+.modal.show{display:flex}
+.modal-content{animation:zoom .3s ease}
+
+/* ✅ UPDATED AVATAR */
+
+.avatar-container{
+  position:relative;
+  width:110px;
+  height:110px;
+  margin:auto;
+}
+
+
+.avatar-img{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#0f172a;
+  cursor:pointer;
+}
+
+.online{
+  width:14px;
+  height:14px;
+  background:var(--success);
+  border-radius:50%;
+  position:absolute;
+  bottom:8px;
+  right:8px;
+  border:3px solid #0f172a;
+}
+
+
+@keyframes zoom{from{scale:.5;opacity:0}to{scale:1;opacity:1}}
+
+@media(max-width:640px){
+  .info-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<!-- HEADER -->
+<div class="header">
+
+     <div class="avatar-container">
+        <img
+          src="{{ chatroom.image.url }}"
+          alt="Profile Image"
+          id="avatarDisplay"
+          class="avatar-img"
+          onclick="openAvatar()"
+        >
+        <span class="online"></span>
+      </div>
+
+
+
+  <input class="editable" value="{{chatroom.name}}">
+  <input class="editable bio" value="{{chatroom.about}}">
+  <p style="font-size:12px;color:#9ca3af;margin-top:6px">Admin: {{chatroom.admin}}</p>
+</div>
+
+<!-- GROUP INFO -->
+<div class="section">
+<h3>Group Info</h3>
+<div class="info-grid">
+  <div><strong>Created : </strong><small>{{chatroom.created}}</small></div>
+  <div><strong>Members : </strong><small>{{ members_count }}</small></div>
+  <div><strong>Status : </strong><small>Active</small></div>
+  <div><strong>description : </strong><small>{{chatroom.discription}}</small></div>
+</div>
+</div>
+
+<!-- LINK + QR -->
+<div class="section">
+<h3>Group Link & QR</h3>
+<input class="link-input" readonly value="http://localhost:8000/{{group_url}}">
+<div class="qr" onclick="openModal('qr')">
+{% if chatroom.QR_code %}
+  <img id="qrImg" src="{{chatroom.QR_code.url}}">
+{% endif %}
+</div>
+</div>
+
+<!-- MEMBERS -->
+<div class="section">
+<h3>Members (Admin)</h3>
+<div class="members-list" id="membersList">
+  {% for group in chatroom.members.all %}
+    {% if group == chatroom.admin%}
+    <div class="member">
+      <img src="{{group.image.url}}" alt="{{group.user.username}}" class="avatar">
+      <small>{{group.user.username}}</small>
+    
+    </div>
+    {% else %}
+    <div class="member">
+      <img src="{{group.image.url}}" alt="{{group.user.username}}" class="avatar">
+      <small>{{group.user.username}}</small>
+      <a href="/remove_user_from_group/{{chatroom.id}}/{{group.user.id}}"><span class="remove">×</span></a>
+    </div>
+    {% endif %}
+  {% endfor %}
+
+</div>
+</div>
+
+<!-- ADMIN ACTIONS -->
+<div class="section admin-actions">
+<h3>Admin Controls</h3>
+
+<a href="/chat/{{chatroom.id}}"><button class="text">Back to Group</button></a>
+<a href="/delete_group/{{chatroom.id}}"><button class="danger">Delete Group</button></a>
+</div>
+
+</div>
+</div>
+
+<!-- IMAGE / QR MODAL -->
+<div class="modal" id="modal" onclick="closeModal()">
+  <div class="modal-content" id="modalContent"></div>
+</div>
+
+<!-- ADD MEMBER MODAL -->
+<div class="modal" id="addMemberModal">
+  <div class="modal-content" style="background:#111827;padding:20px;border-radius:18px;width:90%;max-width:420px">
+    <h3 style="color:#c7d2fe;margin-bottom:10px">Add Members</h3>
+    <input
+      type="text"
+      placeholder="Search users..."
+      onkeyup="filterUsers(this.value)"
+      style="width:100%;padding:10px;border-radius:12px;background:#0f172a;border:none;color:white"
+    >
+    <div id="userList" style="margin-top:12px;max-height:260px;overflow-y:auto"></div>
+    <button style="margin-top:10px" onclick="closeAddMember()">Done</button>
+  </div>
+</div>
+
+<script>
+/* Truncate member names to first 10 characters */
+function truncateMemberNames(){
+  const members = document.querySelectorAll('.member small');
+  members.forEach(small => {
+    if(small.textContent.length > 10){
+      small.textContent = small.textContent.substring(0, 10);
+    }
+  });
+}
+document.addEventListener('DOMContentLoaded', truncateMemberNames);
+
+/* Avatar zoom function */
+function openAvatar(){
+  const modal = document.getElementById('modal');
+  const modalContent = document.getElementById('modalContent');
+  const avatarImg = document.getElementById('avatarDisplay');
+  modalContent.innerHTML = '';
+  const img = document.createElement('img');
+  img.src = avatarImg.src;
+  img.style.maxWidth = '95vw';
+  img.style.maxHeight = '95vh';
+  img.style.width = '100%';
+  img.style.height = '100%';
+  img.style.borderRadius = '0';
+  img.style.objectFit = 'contain';
+  modalContent.appendChild(img);
+  modal.classList.add('show');
+}
+
+/* Close modal */
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+}
+
+/* QR and Avatar modal */
+function openModal(type){
+  const modal = document.getElementById('modal');
+  const modalContent = document.getElementById('modalContent');
+  const qrImg = document.getElementById('qrImg');
+  modalContent.innerHTML="";
+  if(type==="qr"){
+    modalContent.appendChild(qrImg.cloneNode());
+  }
+  modal.classList.add('show');
+}
+
+
+</script>
+
+</body>
+</html>

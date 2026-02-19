@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background:linear-gradient(135deg,#0b1220,#020617);
+            
+        }
+
+        .denied-container {
+            text-align: center;
+            background-color: #fed3d3;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .denied-container h1 {
+            color: #FF0000;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .denied-container p {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .cross-icon {
+            font-size: 4rem;
+            color: #FF0000;
+            margin-bottom: 20px;
+        }
+
+        .ok-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #ffffff;
+            background-color: #FF0000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .ok-button:hover {
+            background-color: #cc0000;
+        }
+
+        /* ---------- Branding ---------- */
+        .brand{
+            text-align:center;
+            margin-bottom:22px;
+        }
+        .brand h1{
+            margin:0;
+            font-size:28px;
+        }
+        .brand span{color:var(--primary)}
+        .subtitle{
+            text-align:center;
+            color:var(--muted);
+            margin-bottom:24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="denied-container">
+        <div class="brand">
+            <h1><span>Chat</span>Flow</h1>
+        </div>
+        <div class="cross-icon">&#10006;</div>
+        <h1>Access Denied</h1>
+        <p>The access you request to the ChatFlow website has been denied.</p>
+        <a href="/" class="ok-button">OK</a>
+    </div>
+</body>
+</html>
+
+
