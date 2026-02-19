@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'CHATAPP',
     'channels',
     'cloudinary',
-    'cloudinary_storage'
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -146,6 +146,7 @@ EMAIL_HOST_USER="chatflowmail@gmail.com"
 EMAIL_HOST_PASSWORD="dcjq blws fsoa bwnl"
 
 
-DEFAUL_FILE_STORAGE = {
-    ''
+CLOUDINARY_STORAGE = {
+    
 }
+DEFAUL_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

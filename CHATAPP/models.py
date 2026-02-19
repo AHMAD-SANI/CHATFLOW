@@ -42,9 +42,6 @@ class chatroom(models.Model):
     QR_code = models.FileField(upload_to='QR_codes/', blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     
-    # def __str__(self):
-    #     if self.name:
-    #         return self.name
     
     
 def save(self, *args, **kwargs):

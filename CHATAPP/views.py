@@ -140,7 +140,7 @@ def email_sent_view(request):
 
 
 def reset_password_view(request, reset_id):
-    # try:
+    try:
         reset_valid = reset_password.objects.get(id=reset_id)
         if request.method == 'POST':
             password = request.POST['password'] 
@@ -173,9 +173,9 @@ def reset_password_view(request, reset_id):
                 
                 
         return render(request, 'password_reset.html')
-    # except:
-    #     messages.error(request, 'you have provide an invalid reset url')
-    #     return redirect('/forgot_password')
+    except:
+        messages.error(request, 'you have provide an invalid reset url')
+        return redirect('/forgot_password')
 
 
 @login_required(login_url='/login')
