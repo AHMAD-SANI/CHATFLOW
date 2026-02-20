@@ -130,8 +130,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CHANNEL_LAYERS = {
     'default': {
@@ -147,6 +147,8 @@ EMAIL_HOST_PASSWORD="dcjq blws fsoa bwnl"
 
 
 CLOUDINARY_STORAGE = {
-    
+    'CLOUD_NAME' : 'dcgfrztgw',
+    'API_KEY' :  '799543644434748',
+    'API_SECRET' : 'yzoEHrjqnj5y-lZQjaEju6cMEHs'
 }
 DEFAUL_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
