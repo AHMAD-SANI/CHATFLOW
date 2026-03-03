@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middlewere.WhiteNoiseMiddlewere'
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -131,6 +132,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -143,7 +145,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {  # must be all caps
             "hosts": [  # must be 'hosts' not 'host'
-                "rediss://default:AfLhAAIncDJlMzVlOGVmNjgxNzg0OGI5ODBjNjQzMGRmZGM0NWNkYnAyNjIxNzc@composed-panther-62177.upstash.io:6379"
+                os.environ.get('REDIS_HOST'),
             ],
             # "ssl": True,  # Upstash requires TLS
             # password is optional if included in URL, so you can omit the "password" line
