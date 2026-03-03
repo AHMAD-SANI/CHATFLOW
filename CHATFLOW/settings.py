@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import cloudinary_storage
+import cloudinary
 from pathlib import Path
 import os
 
@@ -21,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-lr4z7+3#-^+h8u(0=wjnihr&sz(j@d*ehzs8)=x@zpror9xa9x'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,11 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     #MY APPS
     'CHATAPP',
     'channels',
     'cloudinary',
     'cloudinary_storage',
+    
 ]
 
 MIDDLEWARE = [
@@ -81,12 +84,16 @@ ASGI_APPLICATION = 'CHATFLOW.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+import dj_database_url
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+DATABASES['default']  = dj_database_url.parse(os.environ.get('DATABASE_URL'))
 
 
 # Password validation
@@ -130,25 +137,36 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'
-    }
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {  # must be all caps
+            "hosts": [  # must be 'hosts' not 'host'
+                "rediss://default:AfLhAAIncDJlMzVlOGVmNjgxNzg0OGI5ODBjNjQzMGRmZGM0NWNkYnAyNjIxNzc@composed-panther-62177.upstash.io:6379"
+            ],
+            # "ssl": True,  # Upstash requires TLS
+            # password is optional if included in URL, so you can omit the "password" line
+        },
+    },
 }
 
 EMAIL_HOST="smtp.gmail.com"
 EMAIL_PORT=465
 EMAIL_USE_SSL=True
 EMAIL_HOST_USER="chatflowmail@gmail.com"
-EMAIL_HOST_PASSWORD="dcjq blws fsoa bwnl"
+EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD')
 
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME' : 'dcgfrztgw',
-    'API_KEY' :  '799543644434748',
-    'API_SECRET' : 'yzoEHrjqnj5y-lZQjaEju6cMEHs'
-}
-DEFAUL_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+cloudinary.config(
+    cloud_name =  os.environ.get('CLOUD_NAME'),
+    api_key  = os.environ.get('API_KEY'),
+    api_secret = os.environ.get('API_SECRET'),
+)
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+
+
+

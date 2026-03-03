@@ -41,7 +41,7 @@ def register(request):
                     login(request, obj_user)
                     
                     profiles = profile.objects.create(user=obj_user, fullname=username)
-                    profiles.save
+                    profiles.save()
                     print('login the user')
                     
                     # send welcoming email.
@@ -50,7 +50,7 @@ def register(request):
                     })
                     
                     email_obj = EmailMessage(
-                        'Welcome Abroad...',
+                        'ChatFlow, Welcome Abroad...',
                         data,
                         settings.EMAIL_HOST_USER,
                         [email]
