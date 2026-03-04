@@ -45,21 +45,21 @@ def register(request):
                     print('login the user')
                     
                     # send welcoming email.
-                    data = render_to_string('welcome_email.html', {
-                        'profile' : profiles
-                    })
+                    # data = render_to_string('welcome_email.html', {
+                    #     'profile' : profiles
+                    # })
                     
-                    email_obj = EmailMessage(
-                        'ChatFlow, Welcome Abroad...',
-                        data,
-                        settings.EMAIL_HOST_USER,
-                        [email]
+                    # email_obj = EmailMessage(
+                    #     'ChatFlow, Welcome Abroad...',
+                    #     data,
+                    #     settings.EMAIL_HOST_USER,
+                    #     [email]
                         
-                    )
+                    # )
                     
-                    email_obj.fail_silently = True
-                    email_obj.content_subtype = 'html'
-                    email_obj.send()
+                    # email_obj.fail_silently = True
+                    # email_obj.content_subtype = 'html'
+                    # email_obj.send()
                     
                     
                     return redirect('/profile') 
