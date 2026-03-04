@@ -44,23 +44,6 @@ def register(request):
                     profiles.save()
                     print('login the user')
                     
-                    # send welcoming email.
-                    # data = render_to_string('welcome_email.html', {
-                    #     'profile' : profiles
-                    # })
-                    
-                    # email_obj = EmailMessage(
-                    #     'ChatFlow, Welcome Abroad...',
-                    #     data,
-                    #     settings.EMAIL_HOST_USER,
-                    #     [email]
-                        
-                    # )
-                    
-                    # email_obj.fail_silently = True
-                    # email_obj.content_subtype = 'html'
-                    # email_obj.send()
-                    
                     
                     return redirect('/profile') 
         messages.error(request, "password does'nt match.")
@@ -180,8 +163,7 @@ def reset_password_view(request, reset_id):
 
 @login_required(login_url='/login')
 def profiles(request):
-    user = request.user
-    profile_obj = profile.objects.get(user=user)
+    profile_obj = profile.objects.get(user=request.user)
     user_groups = chatroom.objects.filter(admin=profile_obj)
     if request.method == 'POST':
         profile_image = request.FILES.get('profile_image')
