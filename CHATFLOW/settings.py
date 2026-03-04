@@ -25,11 +25,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-CRSF_TRUSTED_ORIGINS = [ '*']
+ALLOWED_HOSTS = ["chatflow-xe4l.onrender.com/register", ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://chatflow-xe4l.onrender.com/register",
+]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 # Application definition
 
 INSTALLED_APPS = [
