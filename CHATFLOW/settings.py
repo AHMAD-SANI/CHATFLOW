@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+CRSF_TRUSTED_ORIGINS = [ '*']
 
 # Application definition
 
