@@ -27,10 +27,10 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["chatflow-xe4l.onrender.com/register", ]
+ALLOWED_HOSTS = ["chatflow-xe4l.onrender.com", ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://chatflow-xe4l.onrender.com/register",
+    "https://chatflow-xe4l.onrender.com",
 ]
 
 CSRF_COOKIE_SECURE = True
