@@ -31,7 +31,7 @@ class chatroom(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     image = CloudinaryField('group_avater', blank=True, null=True)
     about = models.TextField(blank=True, null=True)
-    discription = models.TextField(blank=True, null=True)
+    description = models.TextField(db_column='dicription', blank=True, null=True)
     is_private = models.BooleanField(default=False)
     admin = models.ForeignKey(profile, on_delete=models.CASCADE, blank=True, null=True)
     members = models.ManyToManyField(profile, related_name='members')

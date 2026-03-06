@@ -219,7 +219,7 @@ def create_group(request):
                                                name=group_name, 
                                                image=group_image, 
                                                about=group_bio, 
-                                               discription=group_description, 
+                                               description=group_description, 
                                                admin=group_admin
                                                )
         create_group.members.add(group_admin)
