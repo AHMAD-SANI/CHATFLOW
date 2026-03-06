@@ -15,6 +15,10 @@ from django.template.loader import render_to_string
 
 
 
+def get_user_profile(user):
+    obj, created = profile.objects.get_or_create(user=user, defaults={'fullname': getattr(user, 'username', '')})
+    return obj
+
 def register(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -163,7 +167,7 @@ def reset_password_view(request, reset_id):
 
 @login_required(login_url='/login')
 def profiles(request):
-    profile_obj = profile.objects.get(user=request.user)
+    profile_obj = get_user_profile(request.user)
     user_groups = chatroom.objects.filter(admin=profile_obj)
     if request.method == 'POST':
         profile_image = request.FILES.get('profile_image')
@@ -209,7 +213,7 @@ def create_group(request):
         group_image = request.FILES.get('image')
         group_description = request.POST['description']
         user = request.user
-        group_admin = profile.objects.get(user=user)
+        group_admin = get_user_profile(user)
         
         create_group = chatroom.objects.create(
                                                name=group_name, 
@@ -249,7 +253,7 @@ def group_detail(request, id):
             return render(request, 'group_admin.html', context=context)
         else:
             user = request.user
-            user_profile = profile.objects.get(user=user)
+            user_profile = get_user_profile(user)
             if chatroom_obj.members.filter(id=user_profile.id).exists():
                 print('the user inthe member list')
                 members_count = chatroom_obj.members.all().count()
@@ -279,18 +283,18 @@ def failed(request):
 def remove_user_from_group(request, group_id, user_id):
     try:
         user_obj = User.objects.get(id=user_id)
-        profile_obj = profile.objects.get(user=user_obj)
+        profile_obj = get_user_profile(user_obj)
         group = chatroom.objects.get(id=group_id)
         print(profile_obj)
         print(group)
         user = request.user
-        admin_profile = profile.objects.get(user=user)
+        admin_profile = get_user_profile(user)
         print(admin_profile)
         if admin_profile == group.admin:
             group.members.remove(profile_obj)
             return redirect(f'/groups/{group_id}')
         else:
-            profile_obj = profile.objects.get(user=request.user)
+            profile_obj = get_user_profile(request.user)
             group.members.remove(profile_obj)
             return redirect('/')
     except:
@@ -301,7 +305,7 @@ def remove_user_from_group(request, group_id, user_id):
 @login_required(login_url='/login')
 def delete_group(request, group_id):
     group_obj = chatroom.objects.get(id=group_id)
-    admin_profile = profile.objects.get(user=request.user)
+    admin_profile = get_user_profile(request.user)
     if admin_profile == group_obj.admin:
         group_obj.delete()
         return redirect('/profile')
@@ -313,7 +317,7 @@ def delete_group(request, group_id):
 @login_required(login_url='/login')
 def index(request, chatroom_id):
     user = request.user
-    user_profile = profile.objects.get(user=user)
+    user_profile = get_user_profile(user)
     my_chatrooms = chatroom.objects.filter(members=user_profile)
     current_group = chatroom.objects.get(id=chatroom_id)
     chat_messages = chat_message.objects.filter(chatroom=current_group)
@@ -335,7 +339,7 @@ def index(request, chatroom_id):
 @login_required(login_url='/login')
 def home(request):
     user = request.user
-    user_profile = profile.objects.get(user=user)
+    user_profile = get_user_profile(user)
     my_chatrooms = chatroom.objects.filter(members=user_profile)
     print(my_chatrooms)
     context = {
@@ -350,10 +354,10 @@ def privatechat(request):
     if request.method == 'POST':
         email = request.POST['email']
         user = request.user
-        user_profile = profile.objects.get(user=user)
+        user_profile = get_user_profile(user)
         try:
             chat_member = User.objects.get(email=email)
-            chat_member_profile = profile.objects.get(user=chat_member)
+            chat_member_profile = get_user_profile(chat_member)
             my_group = chatroom.objects.filter(members=user_profile).filter(members=chat_member_profile).first()
             if my_group is not None:
                 return redirect(f'/chat/{my_group.id}')
