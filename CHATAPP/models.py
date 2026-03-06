@@ -6,7 +6,8 @@ import uuid
 
 class reset_password(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4)
+    # Use BigAutoField for numeric primary key to match DB bigint columns
+    id = models.BigAutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -27,7 +28,10 @@ class profile(models.Model):
 
     
 class chatroom(models.Model):
-    id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4)
+    # Use BigAutoField to match the existing DB column type (bigint).
+    # The database currently has `id` as bigint which caused a failure
+    # when the model tried to insert a UUID string into that column.
+    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, blank=True, null=True)
     image = CloudinaryField('group_avater', blank=True, null=True)
     about = models.TextField(blank=True, null=True)
