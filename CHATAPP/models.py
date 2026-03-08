@@ -33,7 +33,7 @@ class chatroom(models.Model):
     # when the model tried to insert a UUID string into that column.
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, blank=True, null=True)
-    image = CloudinaryField('group_avater', default='https://res.cloudinary.com/dcgfrztgw/image/upload/v1773186383/Screenshot_2026-03-03_023955_piykhh.png')
+    image = CloudinaryField('group_avater')
     about = models.TextField(blank=True, null=True)
     description = models.TextField(db_column='dicription', blank=True, null=True)
     is_private = models.BooleanField(default=False)
