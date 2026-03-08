@@ -266,8 +266,22 @@ a{
   .back-btn{display:block}
 
   .chat{position:relative}
-  .chat-header{padding:10px;gap:8px}
-  .messages{padding:12px}
+  .chat-header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: var(--panel);
+    padding:10px;
+    gap:8px
+  }
+  .messages{
+    padding:12px;
+    padding-top: 80px; /* Adjust for fixed header height */
+    overflow-y: auto;
+    height: calc(100vh - 160px); /* Adjust for header and input area */
+  }
 
   .msg{max-width:85%}
 

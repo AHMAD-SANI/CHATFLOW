@@ -112,7 +112,7 @@ def forgot_password_view(request):
                     settings.EMAIL_HOST_USER, # email sender
                     [email] # email  receiver 
                 )
-                email_message.fail_silently = False
+                email_message.fail_silently = True
                 email_message.content_subtype = 'html'
                 email_message.send()
                 return redirect('/email_sent')
