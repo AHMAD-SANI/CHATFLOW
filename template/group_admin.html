@@ -173,8 +173,9 @@ body{background:linear-gradient(135deg,#0b1220,#020617);color:var(--text);min-he
 
 <!-- LINK + QR -->
 <div class="section">
-<h3>Group Link & QR</h3>
-<input class="link-input" readonly value="http://localhost:8000/{{group_url}}">
+<h3>Group Link & QR</h3> <br>
+<h6>copy and sent to you friends.</h6>
+<input class="link-input" readonly value="https://chatflow-xe4l.onrender.com/{{group_url}}">
 <div class="qr" onclick="openModal('qr')">
 {% if chatroom.QR_code %}
   <img id="qrImg" src="{{chatroom.QR_code.url}}">

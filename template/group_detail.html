@@ -124,7 +124,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;background:var(--p
     <!-- Chat Link & QR -->
     <div class="section">
       <h3>Chat Link & QR Code</h3>
-      <input class="link-input" type="text" readonly value="http://localhost:8000/{{group_url}}">
+      <input class="link-input" type="text" readonly value="https://chatflow-xe4l.onrender.com/{{group_url}}">
       <div class="qr-container" onclick="openModal('qr')">
         {% if chatroom.QR_code %}
           <img id="qrImg" src="{{chatroom.QR_code.url}}">

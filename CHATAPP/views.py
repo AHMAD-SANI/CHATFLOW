@@ -79,7 +79,7 @@ def logout_view(request):
 @login_required(login_url='/login')
 def delete_my_account(request):
     username = request.user.username
-    user = User.objects.get(username=username)
+    user = User.objects.filter(username=username).first()
     user.delete()
     return redirect('/register')
 
@@ -89,7 +89,7 @@ def forgot_password_view(request):
     if request.method == 'POST':
         email = request.POST['email']
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.filter(email=email).first()
             if user is not None:
                 prevous_reset_obj = reset_password.objects.filter(user=user)
                 if prevous_reset_obj:
@@ -116,7 +116,7 @@ def forgot_password_view(request):
                 email_message.content_subtype = 'html'
                 email_message.send()
                 return redirect('/email_sent')
-        except:
+        except user.DoesNotExist:
             messages.error(request, 'Invalid email address.')
 
     return render(request, 'forgot_password.html')
@@ -213,7 +213,7 @@ def create_group(request):
         group_image = request.FILES.get('image')
         group_description = request.POST['description']
         user = request.user
-        group_admin = get_user_profile(user)
+        group_admin = profile.objects.get(user=user)
         
         create_group = chatroom.objects.create(
                                                name=group_name, 

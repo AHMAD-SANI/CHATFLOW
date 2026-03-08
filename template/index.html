@@ -251,6 +251,10 @@ a{
   color: inherit;
 }
 
+.small_username{
+  font-size: x-small;
+}
+
 /* Mobile / Responsive adjustments */
 @media (max-width: 768px) {
   .sidebar{
@@ -393,7 +397,8 @@ a{
         <img src="{{message.user.image.url}}" alt="A" class="msg-avatar">
         <div class="msg left">
           {{message.message}}
-          <span class="delete" onclick="deleteMsg(this)">🗑️</span>
+          <span class="delete" onclick="deleteMsg(this)">🗑️</span><br>
+          <span class="small_username"><b><i>@{{message.user.fullname}}.</i></b></span>
         </div>
       </div>
     {% else %}

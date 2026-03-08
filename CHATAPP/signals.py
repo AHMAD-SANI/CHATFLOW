@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .models import *
 from django.contrib.auth.models import User
@@ -25,6 +25,7 @@ def send_email(sender, instance, created, args, *kwargs):
         )
         
         welcome_email.content_subtype = 'html'
-        welcome_email.fail_silently = False
+        welcome_email.fail_silently = True
         welcome_email.send()
+        
         

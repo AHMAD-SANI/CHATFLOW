@@ -47,4 +47,5 @@ class chat_message(models.Model):
     user = models.ForeignKey(profile, on_delete=models.CASCADE, related_name='sender')
     chatroom = models.ForeignKey(chatroom, on_delete=models.CASCADE, related_name='chatroom')
     message = models.TextField()
+    time = models.DateTimeField(auto_now_add=True)
     
